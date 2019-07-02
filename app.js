@@ -12,54 +12,42 @@ class App {
         })
     };
 
-    addForkCount(tree = [], level = 0) {
-        level++; // 进入一层递归相当于进入下一级
+    addForkCount(tree = []) {
         tree.forEach(child => {
             let pathCount = this.pathCount;
             Object.values(child).forEach(value => {
-
                 if (value instanceof Array) { // 通配约定Array类型为子级(暂不支持连空Array都没有的数据结构)
                     if (value.length === 0) { // 到达当前树径的尽头
                         this.pathCount++;
                     } else { // 仍有子级继续递归
-                        this.addForkCount(value, level);
+                        this.addForkCount(value);
                     }
                 }
             });
-            
-            Object.keys(child).forEach(key => {
-                if (child[key] instanceof Array) {
-                    let temp = child[key];
-                    delete child[key];
-                    child.forkCount277013309X = this.pathCount - pathCount;
-                    child[key] = temp;
-                }
-            });
+            child.forkCount277013309X = this.pathCount - pathCount;
         });
-
-        level--; // 退出一层递归相当于回到父级
-
-        if (level === 0) { // 表示递归结束
-            console.log(tree);
-        }
     }
 
     parseTree(tree = [], level = 0, nodePath = {}, nodeList = []) {
         level++; // 进入一层递归相当于进入下一级
         tree.forEach(child => {
+            let childTemp = [];
+            let nodePathNew = Object.assign({}, nodePath);
             Object.keys(child).forEach(key => {
-                let nodePathNew = Object.assign({}, nodePath);
-
                 if (child[key] instanceof Array) { // 通配约定Array类型为子级(暂不支持连空Array都没有的数据结构)
                     if (child[key].length === 0) { // 到达当前树径的尽头
                         nodeList.push(nodePathNew);
-                    } else { // 仍有子级继续递归
-                        this.parseTree(child[key], level, nodePathNew, nodeList);
+                    } else {
+                        childTemp = child[key]; // 暂存'children' 等当前节点全部遍历完再递归
                     }
                 } else { // 追加
-                    nodePath[key + level] = child[key];
+                    nodePathNew[key + level] = child[key];
                 }
             });
+
+            if (childTemp.length > 0) { // 如果上面有进行暂存'children' 则进入递归
+                this.parseTree(childTemp, level, nodePathNew, nodeList);
+            }
         });
 
         level--; // 退出一层递归相当于回到父级
