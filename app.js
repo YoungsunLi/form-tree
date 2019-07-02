@@ -16,17 +16,25 @@ class App {
         level++; // 进入一层递归相当于进入下一级
         tree.forEach(child => {
             let pathCount = this.pathCount;
-            Object.keys(child).forEach(key => {
+            Object.values(child).forEach(value => {
 
-                if (child[key] instanceof Array) { // 通配约定Array类型为子级(暂不支持连空Array都没有的数据结构)
-                    if (child[key].length === 0) { // 到达当前树径的尽头
+                if (value instanceof Array) { // 通配约定Array类型为子级(暂不支持连空Array都没有的数据结构)
+                    if (value.length === 0) { // 到达当前树径的尽头
                         this.pathCount++;
                     } else { // 仍有子级继续递归
-                        this.addForkCount(child[key], level);
+                        this.addForkCount(value, level);
                     }
                 }
             });
-            child.forkCount277013309X = this.pathCount - pathCount;
+            
+            Object.keys(child).forEach(key => {
+                if (child[key] instanceof Array) {
+                    let temp = child[key];
+                    delete child[key];
+                    child.forkCount277013309X = this.pathCount - pathCount;
+                    child[key] = temp;
+                }
+            });
         });
 
         level--; // 退出一层递归相当于回到父级
