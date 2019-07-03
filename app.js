@@ -35,6 +35,7 @@ class App {
             let nodePathNew = Object.assign({}, nodePath);
             Object.keys(child).forEach(key => {
                 if (child[key] instanceof Array) { // 通配约定Array类型为子级(暂不支持连空Array都没有的数据结构)
+                    nodePath = {}; // 清空会产生冗余的数据
                     if (child[key].length === 0) { // 到达当前树径的尽头
                         nodeList.push(nodePathNew);
                     } else {
