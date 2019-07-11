@@ -7,12 +7,15 @@ class App {
     isHideKey = 'isHide277013309'; // 取一个跟自己实际数据不存的key值
 
     run() {
+        // 计算并添加rowSpan数据
         this.addForkCount(treeData);
 
-        let nodeList = this.parseTree(treeData) || [];
-        nodeList.forEach(node => {
-            console.log(node);
-        })
+        let nodeList = this.parseTree(treeData);
+
+        // values 的值取决于自己的实际数据以及需求
+        let table = this.createTable(nodeList, 'name_1', 'level_1', 'name_2', 'level_2', 'name_3');
+
+        document.body.appendChild(table);
     };
 
     /**
@@ -89,6 +92,41 @@ class App {
         if (level === 0) {
             return nodeList;
         }
+    }
+
+    /**
+     * 创建一张表
+     * @param nodeList 接收由 parseTree() 返回的数组
+     * @param values 自定义显示的列数据
+     * @returns {HTMLTableElement} 创建完成的表
+     */
+    createTable(nodeList, ...values) {
+        let table = document.createElement('table');
+        nodeList.forEach(row => {
+            // createTr
+            let tr = document.createElement('tr');
+
+            Object.values(values).forEach(value => {
+                let level = value.split('_');
+                level = level[level.length - 1];
+
+                // 过滤被rowSpan覆盖的td
+                if (row[this.isHideKey + '_' + level]) return;
+
+                // createTd
+                let td = document.createElement('td');
+                td.innerText = row[value] || '';
+
+                // setRowSpan
+                let rowSpan = row[this.forkCountKey + '_' + level];
+                if (rowSpan) td.rowSpan = rowSpan;
+
+                tr.appendChild(td);
+            });
+
+            table.appendChild(tr);
+        });
+        return table;
     }
 }
 
