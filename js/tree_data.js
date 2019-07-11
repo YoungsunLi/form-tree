@@ -1,4 +1,5 @@
-export default [
+export default 
+[
     {
         "level": "省",
         "name": "广西",
